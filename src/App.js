@@ -10,6 +10,8 @@ import styled from "styled-components";
 import Navbar from "./components/Navbar";
 import { Card, CardDeck, MyCard } from "./components/Card";
 import "./reset.css";
+import Score from "./components/Score";
+import Modal from "./components/Modal";
 
 export const UserContext = createContext();
 
@@ -21,18 +23,60 @@ function App() {
     const newList = fruitList.filter((f) => f !== v);
     setFruitList(newList);
   };
+  //필드에 카드 다시 4장 세팅
   const fsetNewFruitList = () => {
     setFruitList([1, 2, 3, 4]);
   };
+  //패의 카드
   const [myFruits, setMyFruits] = useState([]);
   const fsetMyFruits = (v) => {
     const newList = [...myFruits, v];
     console.log(newList);
     setMyFruits(newList);
   };
+  //무덤의 카드 수
   const [grave, setGrave] = useState(0);
   const fsetGrave = (v) => setGrave((prev) => prev + v);
+  //패의 과일 수
+  const [score, setScore] = useState(0);
+  const fsetScore = (v) => {
+    setScore((prev) => prev + v);
+  };
 
+  const [goal, setGoal] = useState(0);
+  const setRandomGoal = () => {
+    const randomGoal = Math.floor(Math.random() * 20) + 1;
+    setGoal(randomGoal);
+  };
+
+  const [modalOpen, setModalOpen] = useState();
+  const fsetModalOpen = () => setModalOpen((prev) => !prev);
+
+  const [fullScore, setFullScore] = useState(0);
+  const fsetFullScore = (v) => {
+    setFullScore(v);
+  };
+
+  const reset = () => {
+    setRandomGoal();
+    setGrave(0);
+    setScore(0);
+    setMyFruits([]);
+    fsetNewFruitList();
+  };
+
+  useEffect(() => setRandomGoal(), []);
+  useEffect(() => {
+    if (modalOpen === false) {
+      reset();
+    }
+  }, [modalOpen]);
+  useEffect(() => {
+    if (goal !== 0 && score === goal) {
+      console.log("성공");
+      setModalOpen(true);
+    }
+  }, [score]);
   useEffect(() => {
     if (fruitList.length === 0) {
       fsetClean(false);
@@ -50,19 +94,25 @@ function App() {
         fsetNewFruitList,
         fsetGrave,
         fruitList,
+        score,
+        fsetScore,
+        goal,
+        modalOpen,
+        fsetModalOpen,
+        fullScore,
+        fsetFullScore,
       }}
     >
       <Screen>
         <Navbar />
+        <Modal />
+        <FullScore>score: {fullScore}</FullScore>
         <CardDeck />
+        <Score />
         <CardContainer>
           {fruitList.map((fruit) => (
             <Card key={fruit} number={fruit} />
           ))}
-
-          {/* <Card order={2} />
-          <Card order={3} />
-          <Card order={5} /> */}
         </CardContainer>
         <MyCardContainer>
           {myFruits.map((fruit) => (
@@ -106,6 +156,13 @@ const Screen = styled.div`
       align-items: center;
     }
   }
+`;
+const FullScore = styled.div`
+  position: absolute;
+  top: 5rem;
+  left: 1.5rem;
+  font-size: 1.1rem;
+  padding: 0.7rem;
 `;
 const CardContainer = styled.div`
   margin-top: -10vh;

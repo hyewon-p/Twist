@@ -93,6 +93,7 @@ export const Card = memo(({ number }) => {
     fsetMyFruits,
     fsetFruitList,
     fsetNewFruitList,
+    fsetScore,
   } = useContext(UserContext);
   //카드를 버릴지 결정하는 state
   const [cleaning, setCleaning] = useState(false);
@@ -122,6 +123,7 @@ export const Card = memo(({ number }) => {
       myFruits.length < 5
     ) {
       fsetMyFruits({ diceValue, fruitAmount });
+      fsetScore(fruitAmount);
       fsetFruitList(number);
     }
   };
@@ -164,15 +166,22 @@ const Container = styled.button`
 
   @keyframes discard {
     0% {
+      //transform: rotateX(0deg);
+    }
+    50% {
+      transform: translate(-35vw, 35vh) rotateZ(260deg) scale(0);
     }
     100% {
-      transform: translate(-50vw, 50vh) scale(0);
+      transform: translate(0, 50vh) rotateZ(360deg) scale(0);
     }
   }
 
-  //position: ${(props) => (props.clean === true ? "absolute" : "flex")};
   animation: ${(props) =>
-    props.clean === true ? "discard 0.5s forwards" : "none"};
+    props.clean === true ? "discard 0.8s forwards" : "none"};
+
+  //animation-timing-function: cubic-bezier(0.1, 0.91, 0.29, 0.24);
+
+  //position: ${(props) => (props.clean === true ? "absolute" : "flex")};
 
   :hover {
     background-color: ${(props) => (props.toggle ? "black" : "gray")};
